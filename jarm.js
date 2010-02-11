@@ -13,6 +13,7 @@
  *    - moves around based on some control
  */
 var Animation = $.gameQuery.Animation;
+var keycodes = $.gameQueryExt.keycodes;
 var keyTracker;
 
 var game = {
@@ -133,11 +134,10 @@ function moveSprite(sprite, dx, dy){
 
   var hit = false;
   
-  /*$(".collideable").each(function(){
-     var obj = $(this);*/
+  // TODO: pull this out into a function called collide()
   $.each(visibleObjects(), function(i, obj){
     if (hit) { return; }
-    if (rectOverlap(offset.left + dx, offset.top + dy,
+    if ($.gameQueryExt.rectOverlap(offset.left + dx, offset.top + dy,
                     sprite.width(), sprite.height(),
                     obj.position().left, obj.position().top,
                     obj.width(), obj.height())){
@@ -158,25 +158,25 @@ function moveSprite(sprite, dx, dy){
 }
 
 function gameLoop(){
-  var timeElapsed = getTimeElapsed();
+  var timeElapsed = $.gameQueryExt.getTimeElapsed();
 
   if (game.state == "playing"){
     // Get movement
     var dx = 0, dy = 0;
     var anim = animations.walkingAnim.idle;
-    if (keyDown("left")){
+    if ($.gameQueryExt.keyDown("left")){
       dx -= game.moveSpeed;
       anim = animations.walkingAnim.west;
     }
-    if (keyDown("right")){
+    if ($.gameQueryExt.keyDown("right")){
       dx += game.moveSpeed;
       anim = animations.walkingAnim.east;
     }
-    if (keyDown("up")){
+    if ($.gameQueryExt.keyDown("up")){
       dy -= game.moveSpeed;
       anim = animations.walkingAnim.north;
     }
-    if (keyDown("down")){
+    if ($.gameQueryExt.keyDown("down")){
       dy += game.moveSpeed;
       anim = animations.walkingAnim.south;
     }
@@ -193,12 +193,12 @@ function gameLoop(){
       if (moveSprite(game.farmer, dx, dy)){
         if (game.farmer.position().left >= game.playground.width() / 2 &&
             game.farmer.position().left <= game.background.width() - game.playground.width() / 2){
-          game.background.scrollBackground(dx, 0);
+          $.gameQueryExt.bg.scroll(dx, 0);
         }
 
         if (game.farmer.position().top >= game.playground.height() / 2 &&
             game.farmer.position().top <= game.background.height() - game.playground.height() / 2){
-          game.background.scrollBackground(0, dy);
+          $.gameQueryExt.bg.scroll(0, dy);
         }
       }
     }
@@ -242,7 +242,8 @@ $(function(){
     .startGame();
 
   keyTracker = $.gameQuery.keyTracker;
-  game.background = setBackground("#sceengraph", {width: game.worldSize, height: game.worldSize, imageURL: "images/grass.png"});
+  game.background = $.gameQueryExt.bg.set("#sceengraph",
+    {width: game.worldSize, height: game.worldSize, imageURL: "images/grass.png"});
 });
 
 // This one is called when the user presses space
@@ -268,11 +269,11 @@ function activate(){
 
 function onKeyPress(ev){
   if (game.state == "playing"){
-    if (ev.which == $.keycodes.space){
+    if (ev.which == keycodes.space){
       activate();
     }
   }else if (game.state == "paused"){
-    if (ev.which == $.keycodes.escape && game.dialog !== null){
+    if (ev.which == keycodes.escape && game.dialog !== null){
       game.dialog.close();
     }
   }

@@ -68,7 +68,7 @@ $.gameQueryExt.QuadTreeNode.prototype.split = function(){
 }
 $.gameQueryExt.QuadTreeNode.prototype.get = function(x, y, width, height){
   if (this.child){
-    if (!rectOverlap(this.x, this.y, this.width, this.height, x, y, width, height)){
+    if (!$.gameQueryExt.rectOverlap(this.x, this.y, this.width, this.height, x, y, width, height)){
       return null;;
     }else{
       return $.map(this.objects, function(obj, i) { return obj.obj; });
@@ -97,3 +97,112 @@ $.gameQueryExt.QuadTree.prototype.get = function(x, y, width, height){
   return this.root.get(x, y, width, height);
 }
 
+$.gameQueryExt.bg = {elem: null};
+
+$.gameQueryExt.bg.scroll = function(dx, dy){
+  if ($.gameQueryExt.bg.elem === null){
+    return;
+  }
+  var elem = $.gameQueryExt.bg.elem;
+  var pos = elem.position();
+  var x = dx - pos.left;
+  var y = dy - pos.top;
+
+  var playground = $.playground();
+  if (x < 0)
+    x = 0;
+  else if (x + playground.width() >= elem.width())
+    x = elem.width() - playground.width();
+
+  if (y < 0)
+    y = 0;
+  else if (y + playground.height() >= elem.height())
+    y = elem.height() - playground.height();
+
+  var offset = elem.offset();
+  var position = elem.position();
+  elem.offset({left: offset.left - position.left - x, top: offset.top - position.top - y});
+  return elem;
+}
+
+$.gameQueryExt.bg.set = function(elem, options){
+  // backgrounds repeat
+  var background = $.gameQueryExt.bg.elem = $(elem);
+
+  $.extend({
+    width: background.width(),
+    height: background.height()
+  }, options);
+
+  background.css(
+    {
+      backgroundRepeat: "repeat",
+      backgroundPosition: "0px 0px",
+      backgroundImage: "url(" + options.imageURL + ")",
+      width: options.width + "px",
+      height: options.height + "px"
+    }
+  );
+
+  return background;
+}
+
+$.gameQueryExt.rectOverlap = function(x1, y1, w1, h1, x2, y2, w2, h2){
+  if ((x1 + w1 >= x2) &&
+      (y1 + h1 >= y2) &&
+      (x1 <= x2 + w2) &&
+      (y1 <= y2 + h2))
+    return true;
+  return false;
+}
+
+$.gameQueryExt.keyDown = function(what){
+  return $.gameQuery.keyTracker[$.gameQueryExt.keycodes[what]];
+}
+
+$.gameQueryExt.keycodes = {
+  backspace:  8,
+  tab:        9,
+  enter:     13,
+  shift:     16,
+  ctrl:      17,
+  alt:       18,
+  pause:     19,
+  caps:      20,
+  escape:    27,
+  space:     32,
+  pageup:    33,
+  pagedown:  34,
+  end:       35,
+  home:      36,
+  left:      37,
+  up:        38,
+  right:     39,
+  down:      40,
+  insert:    45,
+  del:       46
+}
+
+for (var i = 48; i <= 57; i++){
+  $.gameQueryExt.keycodes[String.fromCharCode(i)] = i;
+}
+for (var i = 65; i <= 90; i++){
+  $.gameQueryExt.keycodes[String.fromCharCode(i)] = i;
+}
+for (var i = 0; i <= 9; i++){
+  $.gameQueryExt.keycodes["num" + i] = i + 96;
+}
+for (var i = 1; i <= 12; i++){
+  $.gameQueryExt.keycodes["f" + i] = i + 111;
+}
+
+$.gameQueryExt.getTimeElapsed = function (){
+  if ($.gameQueryExt.getTimeElapsed.lastFrame === undefined)
+    $.gameQueryExt.getTimeElapsed.lastFrame = new Date();
+
+  var currentTime = new Date();
+  var gap = new Date();
+  gap.setTime(currentTime.getTime() - $.gameQueryExt.getTimeElapsed.lastFrame.getTime());
+  $.gameQueryExt.getTimeElapsed.lastFrame = currentTime;
+  return gap.getMilliseconds();
+}
