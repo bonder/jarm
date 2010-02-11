@@ -1,6 +1,10 @@
-function View(viewport, game){
-  this.viewport = viewport;
-  this.game = game;
+function JarmView(){
+  LockedView.call(this, game.farmer, $.playground(), game.background, {
+    width: game.worldSize,
+    height: game.worldSize,
+    imageURL: "images/grass.png"
+  });
+
   this.frameRate = 1000 / 50;
 
   // update rate happens less often since it isn't necessary
@@ -13,11 +17,9 @@ function View(viewport, game){
 
   this.drawInventory();
 }
+JarmView.prototype = LockedView.prototype;
 
-View.prototype.frame = function(timeStep){
-}
-
-View.prototype.update = function(){
+JarmView.prototype.update = function(){
   var now = new Date().getTime();
 
   if (this.msgLastDraw === null || this.msgLastDraw + 1000 < now){
@@ -26,7 +28,7 @@ View.prototype.update = function(){
   }
 }
 
-View.prototype.drawMessages = function(){
+JarmView.prototype.drawMessages = function(){
   var current;
   var text = "";
   var now = new Date().getTime();
@@ -44,35 +46,23 @@ View.prototype.drawMessages = function(){
 
 }
 
-View.prototype.drawInventory = function(){
+JarmView.prototype.drawInventory = function(){
   var current;
   var text = "";
 
-  if (this.game.farmer.inventory.length === 0){
+  if (game.farmer.inventory.length === 0){
     text = "<i>Nothing</i>";
   }else{
-    text = mapJoin(this.game.farmer.inventory, "<br />", function(obj) { return obj.name; });
+    text = mapJoin(game.farmer.inventory, "<br />", function(obj) { return obj.name; });
   }
 
   $("#inventory").html(text);
 }
 
-View.prototype.addMessage = function(message){
+JarmView.prototype.addMessage = function(message){
   this.messages.push({
     message: message,
     timestamp: new Date().getTime()
   });
   this.drawMessages();
-}
-
-function LockedView(target, viewport, game){
-  View.call(this, viewport, game);
-  this.target = target;
-}
-LockedView.prototype = View.prototype;
-
-LockedView.prototype.frame = function(timeStep){
-  var left = this.target.position().left;
-  var top = this.target.position().top;
-  $.gameQueryExt.bg.position(left - Math.floor(this.viewport.width() / 2), top - Math.floor(this.viewport.height() / 2));
 }

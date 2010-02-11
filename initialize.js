@@ -1,13 +1,14 @@
 $(function(){
   $("#playground").playground({width: 800, height: 600, keyTracker: true});
   game.playground = $.playground();
+  game.background = $("#sceengraph");
 
   loadPlants();
   loadWalkingAnim();
   loadObjects();
   initializeFarmer();
 
-  view = new LockedView(game.farmer, game.playground, game);
+  view = new JarmView();
   registerCallbacks();
 
   game.state = "playing";
@@ -15,8 +16,6 @@ $(function(){
     .startGame();
 
   keyTracker = $.gameQuery.keyTracker;
-  game.background = $.gameQueryExt.bg.set("#sceengraph",
-    {width: game.worldSize, height: game.worldSize, imageURL: "images/grass.png"});
 });
 
 function loadPlants(){

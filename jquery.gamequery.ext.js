@@ -97,62 +97,6 @@ $.gameQueryExt.QuadTree.prototype.get = function(x, y, width, height){
   return this.root.get(x, y, width, height);
 }
 
-$.gameQueryExt.bg = {elem: null};
-
-$.gameQueryExt.bg.scroll = function(dx, dy){
-  if ($.gameQueryExt.bg.elem === null){
-    return;
-  }
-  var elem = $.gameQueryExt.bg.elem;
-  var pos = elem.position();
-  var x = dx - pos.left;
-  var y = dy - pos.top;
-  $.gameQueryExt.bg.position(x, y);
-}
-
-$.gameQueryExt.bg.position = function(x, y){
-  var elem = $.gameQueryExt.bg.elem;
-  var position = elem.position();
-  var playground = $.playground();
-
-  if (x < 0)
-    x = 0;
-  else if (x + playground.width() >= elem.width())
-    x = elem.width() - playground.width();
-
-  if (y < 0)
-    y = 0;
-  else if (y + playground.height() >= elem.height())
-    y = elem.height() - playground.height();
-
-  var offset = elem.offset();
-  // need to floor it to prevent jittering
-  elem.offset({left: Math.floor(offset.left - position.left - x), top: Math.floor(offset.top - position.top - y)});
-  return elem;
-}
-
-$.gameQueryExt.bg.set = function(elem, options){
-  // backgrounds repeat
-  var background = $.gameQueryExt.bg.elem = $(elem);
-
-  $.extend({
-    width: background.width(),
-    height: background.height()
-  }, options);
-
-  background.css(
-    {
-      backgroundRepeat: "repeat",
-      backgroundPosition: "0px 0px",
-      backgroundImage: "url(" + options.imageURL + ")",
-      width: options.width + "px",
-      height: options.height + "px"
-    }
-  );
-
-  return background;
-}
-
 $.gameQueryExt.rectOverlap = function(x1, y1, w1, h1, x2, y2, w2, h2){
   if ((x1 + w1 >= x2) &&
       (y1 + h1 >= y2) &&
@@ -212,3 +156,79 @@ $.gameQueryExt.getTimeElapsed = function (){
   $.gameQueryExt.getTimeElapsed.lastFrame = currentTime;
   return gap.getMilliseconds();
 }
+
+/* View classes for handling scrolling backgrounds
+ * 
+ * @param viewport The jQuery element where the view is displayed
+ * @param background The jQuery element to be scrolled around in the viewport
+ */
+function View(viewport, background, options){
+  this.viewport = viewport;
+  this.background = background;
+
+  $.extend({
+    width: background.width(),
+    height: background.height()
+  }, options);
+
+  background.css(
+    {
+      backgroundRepeat: "repeat",
+      backgroundPosition: "0px 0px",
+      backgroundImage: "url(" + options.imageURL + ")",
+      width: options.width + "px",
+      height: options.height + "px"
+    }
+  );
+
+  return background;
+}
+
+
+View.prototype.frame = function(timeStep){}
+
+View.prototype.scroll = function(dx, dy){
+  if (this.background === null){
+    return;
+  }
+  var pos = this.background.position();
+  var x = dx - pos.left;
+  var y = dy - pos.top;
+  this.anchor(x, y);
+}
+
+View.prototype.anchor = function(x, y){
+  var position = this.background.position();
+
+  if (x < 0)
+    x = 0;
+  else if (x + this.viewport.width() >= this.background.width())
+    x = this.background.width() - this.viewport.width();
+
+  if (y < 0)
+    y = 0;
+  else if (y + this.viewport.height() >= this.background.height())
+    y = this.background.height() - this.viewport.height();
+
+  var offset = this.background.offset();
+  // need to floor it to prevent jittering
+  this.background.offset({
+    left: Math.floor(offset.left - position.left - x),
+    top: Math.floor(offset.top - position.top - y)
+  });
+  return this.background;
+}
+
+function LockedView(target, viewport, background, options){
+  View.call(this, viewport, background, options);
+  this.target = target;
+}
+LockedView.prototype = View.prototype;
+
+LockedView.prototype.frame = function(timeStep){
+  var left = this.target.position().left;
+  var top = this.target.position().top;
+  this.anchor(left - Math.floor(this.viewport.width() / 2), top - Math.floor(this.viewport.height() / 2));
+}
+
+
