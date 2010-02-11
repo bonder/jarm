@@ -1,3 +1,26 @@
+$(function(){
+  $("#playground").playground({width: 800, height: 600, keyTracker: true});
+  game.playground = $.playground();
+
+  loadPlants();
+  loadWalkingAnim();
+  loadObjects();
+  initializeFarmer();
+
+  view = new View(game.playground, game);
+  registerCallbacks();
+
+  game.state = "playing";
+  game.playground
+    .registerCallback(gameLoop, view.frameRate)
+    .registerCallback(function() {view.update();}, view.updateRate)
+    .startGame();
+
+  keyTracker = $.gameQuery.keyTracker;
+  game.background = $.gameQueryExt.bg.set("#sceengraph",
+    {width: game.worldSize, height: game.worldSize, imageURL: "images/grass.png"});
+});
+
 function loadPlants(){
   var tree = new Animation({imageURL: "images/tree.png"});
   for (var i = 0; i < 10; i++){

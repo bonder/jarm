@@ -30,7 +30,7 @@ PlantingDialog.prototype.plant = function(which){
   plant = plant[0];
 
   game.plant(this.plot, plant);
-  drawInventory();
+  view.drawInventory();
   this.close();
 }
 

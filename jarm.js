@@ -25,16 +25,15 @@ var game = {
   plots: {},
 
   // config params
-  frameRate: 1000 / 50,
   worldSize: 2000,
+  moveSpeed: 5,
 
   searchRadius: 40,
 
-  state: "not started",
-  messages: []
+  state: "not started"
 };
-game.moveSpeed = 5 / game.frameRate;
 game.objects = new $.gameQueryExt.QuadTree(game.worldSize, game.worldSize);
+var view;
 
 var animations = {
   walkingAnim: {},
@@ -50,56 +49,6 @@ function toWindowCoords(hash){
     left: hash.left + bg.left + pg.left,
     top: hash.top + bg.top + pg.top
   };
-}
-
-function drawMessages(){
-  if (drawMessages.threshold === undefined){
-    drawMessages.threshold = 3000;
-    drawMessages.timeout = null;
-  }
-  var current;
-  var text = "";
-  var now = new Date().getTime();
-
-  while (game.messages.length > 0 && now - game.messages[0].timestamp > drawMessages.threshold){
-    game.messages.shift();
-  }
-
-  if (game.messages.length === 0){
-    $("#msg").html("").hide();
-    clearTimeout(drawMessages.timeout);
-    drawMessages.timeout = null;
-  }else{
-    text = mapJoin(game.messages, "<br />", function(obj) { return obj.message; });
-
-    if (drawMessages.timeout !== null){
-      clearTimeout(drawMessages.timeout);
-    }
-    drawMessages.timeout = setTimeout("drawMessages()", 1000);
-    $("#msg").html(text).show();
-  }
-
-}
-
-function drawInventory(){
-  var current;
-  var text = "";
-
-  if (game.farmer.inventory.length === 0){
-    text = "<i>Nothing</i>";
-  }else{
-    text = mapJoin(game.farmer.inventory, "<br />", function(obj) { return obj.name; });
-  }
-
-  $("#inventory").html(text);
-}
-
-function addMessage(message){
-  game.messages.push({
-    message: message,
-    timestamp: new Date().getTime()
-  });
-  drawMessages();
 }
 
 function visibleObjects(){
@@ -175,8 +124,8 @@ function gameLoop(){
       anim = animations.walkingAnim.south;
     }
 
-    dx *= timeElapsed;
-    dy *= timeElapsed;
+    dx *= timeElapsed / view.frameRate;
+    dy *= timeElapsed / view.frameRate;
 
     if (anim != animations.lastWalkingAnim){
       game.farmer.setAnimation(anim);
@@ -205,40 +154,17 @@ function activateBush(bush){
   var plant = plants.getRandomSeed();
 
   if (plant === null){
-    addMessage("Nothing found.");
+    view.addMessage("Nothing found.");
   }else{
-    addMessage("found " + plant.type + " seeds");
+    view.addMessage("found " + plant.type + " seeds");
     game.farmer.inventory.push(plant);
-    drawInventory();
+    view.drawInventory();
   }
 }
 
 function activatePlot(plot){
   game.dialog = new PlantingDialog(plot);
 }
-
-$(function(){
-  $("#playground").playground({width: 800, height: 600, keyTracker: true});
-  game.playground = $.playground();
-
-  loadPlants();
-  loadWalkingAnim();
-  loadObjects();
-  initializeFarmer();
-
-  registerCallbacks();
-
-  drawInventory();
-
-  game.state = "playing";
-  game.playground
-    .registerCallback(gameLoop, game.frameRate)
-    .startGame();
-
-  keyTracker = $.gameQuery.keyTracker;
-  game.background = $.gameQueryExt.bg.set("#sceengraph",
-    {width: game.worldSize, height: game.worldSize, imageURL: "images/grass.png"});
-});
 
 // This one is called when the user presses space
 function activate(){
