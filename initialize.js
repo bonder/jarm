@@ -7,13 +7,11 @@ $(function(){
   loadObjects();
   initializeFarmer();
 
-  view = new View(game.playground, game);
+  view = new LockedView(game.farmer, game.playground, game);
   registerCallbacks();
 
   game.state = "playing";
   game.playground
-    .registerCallback(gameLoop, view.frameRate)
-    .registerCallback(function() {view.update();}, view.updateRate)
     .startGame();
 
   keyTracker = $.gameQuery.keyTracker;
@@ -68,6 +66,9 @@ function loadWalkingAnim(){
 }
 
 function registerCallbacks(){
+  game.playground
+    .registerCallback(gameLoop, view.frameRate)
+    .registerCallback(function() {view.update();}, view.updateRate);
   $(document).keypress(onKeyPress);
 }
 
@@ -77,4 +78,5 @@ function initializeFarmer(){
       width: 16, height: 16, posx: 400, posy: 300});
   game.farmer = $("#farmer");
   game.farmer.inventory = [];
+  game.farmer.facing = "south";
 }

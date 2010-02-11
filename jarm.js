@@ -124,8 +124,9 @@ function gameLoop(){
       anim = animations.walkingAnim.south;
     }
 
-    dx *= timeElapsed / view.frameRate;
-    dy *= timeElapsed / view.frameRate;
+    // need to floor it to prevent jittering
+    dx = Math.floor(dx * timeElapsed / view.frameRate);
+    dy = Math.floor(dy * timeElapsed / view.frameRate);
 
     if (anim != animations.lastWalkingAnim){
       game.farmer.setAnimation(anim);
@@ -133,20 +134,11 @@ function gameLoop(){
     }
 
     if (dx !== 0 || dy !== 0){
-      if (moveSprite(game.farmer, dx, dy)){
-        if (game.farmer.position().left >= game.playground.width() / 2 &&
-            game.farmer.position().left <= game.background.width() - game.playground.width() / 2){
-          $.gameQueryExt.bg.scroll(dx, 0);
-        }
-
-        if (game.farmer.position().top >= game.playground.height() / 2 &&
-            game.farmer.position().top <= game.background.height() - game.playground.height() / 2){
-          $.gameQueryExt.bg.scroll(0, dy);
-        }
-      }
+      moveSprite(game.farmer, dx, dy);
     }
   }
 
+  view.frame(timeElapsed);
   return false;
 }
 

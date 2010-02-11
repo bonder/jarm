@@ -107,8 +107,14 @@ $.gameQueryExt.bg.scroll = function(dx, dy){
   var pos = elem.position();
   var x = dx - pos.left;
   var y = dy - pos.top;
+  $.gameQueryExt.bg.position(x, y);
+}
 
+$.gameQueryExt.bg.position = function(x, y){
+  var elem = $.gameQueryExt.bg.elem;
+  var position = elem.position();
   var playground = $.playground();
+
   if (x < 0)
     x = 0;
   else if (x + playground.width() >= elem.width())
@@ -120,8 +126,8 @@ $.gameQueryExt.bg.scroll = function(dx, dy){
     y = elem.height() - playground.height();
 
   var offset = elem.offset();
-  var position = elem.position();
-  elem.offset({left: offset.left - position.left - x, top: offset.top - position.top - y});
+  // need to floor it to prevent jittering
+  elem.offset({left: Math.floor(offset.left - position.left - x), top: Math.floor(offset.top - position.top - y)});
   return elem;
 }
 

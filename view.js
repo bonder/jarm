@@ -2,6 +2,8 @@ function View(viewport, game){
   this.viewport = viewport;
   this.game = game;
   this.frameRate = 1000 / 50;
+
+  // update rate happens less often since it isn't necessary
   this.updateRate = 1000 / 10;
 
   // message queue related
@@ -10,6 +12,9 @@ function View(viewport, game){
   this.msgLastDraw = null;
 
   this.drawInventory();
+}
+
+View.prototype.frame = function(timeStep){
 }
 
 View.prototype.update = function(){
@@ -60,3 +65,14 @@ View.prototype.addMessage = function(message){
   this.drawMessages();
 }
 
+function LockedView(target, viewport, game){
+  View.call(this, viewport, game);
+  this.target = target;
+}
+LockedView.prototype = View.prototype;
+
+LockedView.prototype.frame = function(timeStep){
+  var left = this.target.position().left;
+  var top = this.target.position().top;
+  $.gameQueryExt.bg.position(left - Math.floor(this.viewport.width() / 2), top - Math.floor(this.viewport.height() / 2));
+}
