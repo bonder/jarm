@@ -14,4 +14,20 @@ var near = function(obj1, obj2, radius){
   return distSq(centre1, centre2) <= radius * radius;
 }
 
-
+/** Maps an array and then merges the elements.
+ *
+ * @param arr - the array to map and join
+ * @param sep - the separator
+ * @param foo - the map function
+ *
+ * If only two arguments are provided, the second one
+ * is the map function and the separator is an empty
+ * string.
+ */
+function mapJoin(arr, sep, foo){
+  if (foo === undefined){
+    foo = sep;
+    sep = "";
+  }
+  return $.map(arr, foo).join(sep);
+}

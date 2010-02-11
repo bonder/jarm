@@ -26,7 +26,10 @@ function loadObjects(){
   game.playground
     .addSprite("plot1", {animation: animations.plot,
       width: 30, height: 30, posx: 340, posy: 300});
-  game.objects.add($("#plot1"), 340, 300);
+  var plot = $("#plot1");
+  plot.contains = null;
+  game.objects.add(plot, 340, 300);
+  game.plots["plot1"] = plot;
 }
 
 function loadWalkingAnim(){

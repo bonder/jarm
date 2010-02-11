@@ -19,8 +19,10 @@ var keyTracker;
 var game = {
   background: null,
   playground: null,
-  farmer: null,
   dialog: null,
+
+  farmer: null,
+  plots: {},
 
   // config params
   frameRate: 1000 / 50,
@@ -68,11 +70,7 @@ function drawMessages(){
     clearTimeout(drawMessages.timeout);
     drawMessages.timeout = null;
   }else{
-    for (var i = 0; i < game.messages.length; i++){
-      current = game.messages[i];
-
-      text += current.message + "<br />";
-    }
+    text = mapJoin(game.messages, "<br />", function(obj) { return obj.message; });
 
     if (drawMessages.timeout !== null){
       clearTimeout(drawMessages.timeout);
@@ -90,11 +88,7 @@ function drawInventory(){
   if (game.farmer.inventory.length === 0){
     text = "<i>Nothing</i>";
   }else{
-    for (var i = 0; i < game.farmer.inventory.length; i++){
-      current = game.farmer.inventory[i];
-
-      text += current.name + "<br />";
-    }
+    text = mapJoin(game.farmer.inventory, "<br />", function(obj) { return obj.name; });
   }
 
   $("#inventory").html(text);
@@ -220,7 +214,7 @@ function activateBush(bush){
 }
 
 function activatePlot(plot){
-  game.dialog = new PlantingDialog();
+  game.dialog = new PlantingDialog(plot);
 }
 
 $(function(){
@@ -260,11 +254,15 @@ function activate(){
         activateBush(obj);
         break;
       }else if (obj.attr("id").match(/plot/)){
-        activatePlot(obj);
+        activatePlot(game.plots[obj.attr("id")]);
         break;
       }
     }
   }
+}
+
+game.plant = function(plot, plant){
+  plot.contains = plant;
 }
 
 function onKeyPress(ev){
@@ -273,7 +271,7 @@ function onKeyPress(ev){
       activate();
     }
   }else if (game.state == "paused"){
-    if (ev.which == keycodes.escape && game.dialog !== null){
+    if (ev.keyCode == keycodes.escape && game.dialog !== null){
       game.dialog.close();
     }
   }
