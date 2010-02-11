@@ -162,7 +162,7 @@ $.gameQueryExt.getTimeElapsed = function (){
  * @param viewport The jQuery element where the view is displayed
  * @param background The jQuery element to be scrolled around in the viewport
  */
-function View(viewport, background, options){
+$.gameQueryExt.View = function(viewport, background, options){
   this.viewport = viewport;
   this.background = background;
 
@@ -185,9 +185,9 @@ function View(viewport, background, options){
 }
 
 
-View.prototype.frame = function(timeStep){}
+$.gameQueryExt.View.prototype.frame = function(timeStep){}
 
-View.prototype.scroll = function(dx, dy){
+$.gameQueryExt.View.prototype.scroll = function(dx, dy){
   if (this.background === null){
     return;
   }
@@ -197,7 +197,7 @@ View.prototype.scroll = function(dx, dy){
   this.anchor(x, y);
 }
 
-View.prototype.anchor = function(x, y){
+$.gameQueryExt.View.prototype.anchor = function(x, y){
   var position = this.background.position();
 
   if (x < 0)
@@ -219,13 +219,13 @@ View.prototype.anchor = function(x, y){
   return this.background;
 }
 
-function LockedView(target, viewport, background, options){
-  View.call(this, viewport, background, options);
+$.gameQueryExt.LockedView = function(target, viewport, background, options){
+  $.gameQueryExt.View.call(this, viewport, background, options);
   this.target = target;
 }
-LockedView.prototype = View.prototype;
+$.gameQueryExt.LockedView.prototype = $.gameQueryExt.View.prototype;
 
-LockedView.prototype.frame = function(timeStep){
+$.gameQueryExt.LockedView.prototype.frame = function(timeStep){
   var left = this.target.position().left;
   var top = this.target.position().top;
   this.anchor(left - Math.floor(this.viewport.width() / 2), top - Math.floor(this.viewport.height() / 2));

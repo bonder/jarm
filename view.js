@@ -1,5 +1,5 @@
 function JarmView(){
-  LockedView.call(this, game.farmer, $.playground(), game.background, {
+  $.gameQueryExt.LockedView.call(this, game.farmer, $.playground(), game.background, {
     width: game.worldSize,
     height: game.worldSize,
     imageURL: "images/grass.png"
@@ -17,7 +17,7 @@ function JarmView(){
 
   this.drawInventory();
 }
-JarmView.prototype = LockedView.prototype;
+JarmView.prototype = $.gameQueryExt.LockedView.prototype;
 
 JarmView.prototype.update = function(){
   var now = new Date().getTime();
