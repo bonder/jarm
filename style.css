@@ -2,6 +2,13 @@ body{
   font-family: Helvetica, Arial;
 }
 
+a, a:active, a:visited {
+  text-decoration: none;
+  color: #00F;
+}
+a:hover {
+  color: #30F;
+}
 .dialog{
   padding: 5px;
   border: 2px solid black;
@@ -36,4 +43,9 @@ body{
   float: right;
   color: red;
   font-weight: bold;
+}
+
+#inventory{
+  overflow-x: hidden;
+  height: 300px;
 }

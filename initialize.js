@@ -78,6 +78,8 @@ function initializeFarmer(){
     .addSprite("farmer", {animation: animations.walkingAnim.idle,
       width: 16, height: 16, posx: 400, posy: 300});
   game.farmer = $("#farmer");
+
+  // TODO: make more advanced inventory system
   game.farmer.inventory = [];
   game.farmer.facing = "south";
 }

@@ -33,7 +33,7 @@ JarmView.prototype.drawMessages = function(){
   var text = "";
   var now = new Date().getTime();
 
-  while (this.messages.length > 0 && now - this.messages[0].timestamp > this.msgThreshold){
+  while (this.messages.length > 5 || (this.messages.length > 0 && now - this.messages[0].timestamp > this.msgThreshold)){
     this.messages.shift();
   }
 

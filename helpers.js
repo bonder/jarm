@@ -31,3 +31,21 @@ function mapJoin(arr, sep, foo){
   }
   return $.map(arr, foo).join(sep);
 }
+
+/** Filters an array and then merges the elements.
+ *
+ * @param arr - the array to filter and join
+ * @param sep - the separator
+ * @param foo - the filter function
+ *
+ * If only two arguments are provided, the second one
+ * is the map function and the separator is an empty
+ * string.
+ */
+function filterJoin(arr, sep, foo){
+  if (foo === undefined){
+    foo = sep;
+    sep = "";
+  }
+  return $.grep(arr, foo).join(sep);
+}

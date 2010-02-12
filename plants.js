@@ -21,24 +21,29 @@ function Plant(type, name, animation){
   this.name = name;
 
   this.growth = 0;
+  this.growTime = 1000;
   this.animation = animation;
 }
 Plant.num = 0;
 Plant.prototype.grow = function(){
-  if (this.growth < 1000){
+  if (this.growth < this.growTime){
     this.growth++;
-    if (this.growth % (1000 / this.animation.numFrames) == 0){
+    if (this.growth % Math.floor(this.growTime / (this.animation.numFrames - 1)) == 0){
       this.nextFrame();
     }
   }
 }
 Plant.prototype.fullGrown = function(){
-  return this.growth == 1000;
+  return this.growth >= Math.floor(this.growTime / (this.animation.numFrames - 1)) * (this.animation.numFrames - 1);
 }
 Plant.prototype.nextFrame = function(){
   if (this.animation.frame < this.animation.numFrames){
     this.elem.css("backgroundPosition", "-" + (this.animation.frame * this.animation.delta) + "px 0px");
     this.animation.frame++;
+
+    if (this.fullGrown()){
+      this.name = this.name.replace(" seeds", "");
+    }
   }
 }
 Plant.prototype.createSprite = function(x, y){
@@ -59,6 +64,9 @@ Plant.prototype.createSprite = function(x, y){
   this.elem.css({
     backgroundImage: "url(" + this.animation.imageURL + ")"
   });
+}
+Plant.prototype.removeSprite = function(){
+  this.elem.remove();
 }
 
 var plants = {

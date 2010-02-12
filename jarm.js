@@ -154,6 +154,7 @@ function gameLoop(){
 }
 
 function activateBush(bush){
+  // TODO: Make it so a bush can run out of seeds
   var plant = plants.getRandomSeed();
 
   if (plant === null){

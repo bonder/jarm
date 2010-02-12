@@ -9,9 +9,10 @@
     <div id = "sidebar">
       Inventory:
       <div id = "inventory"></div>
+      Money: <span id = "money">0</span>
     </div>
     <div class = "dialog" id = "planting-dlg">
-      <div class = "close-button" onclick = "game.dialog.close()">X</div>
+      <div class = "close-button" onclick = "game.dialog.close(); return false">X</div>
       <div class = "dlg-content"></div>
     </div>
     <script type = "text/javascript" src = "jquery-1.4.min.js"></script>
