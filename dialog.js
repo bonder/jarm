@@ -26,7 +26,7 @@ function PlantingDialog(plot){
 }
 
 PlantingDialog.prototype.plant = function(which){
-  var plant = game.farmer.inventory.splice(which, which + 1);
+  var plant = game.farmer.inventory.splice(which, 1);
   plant = plant[0];
 
   game.plant(this.plot, plant);

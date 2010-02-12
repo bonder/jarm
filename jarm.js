@@ -136,6 +136,17 @@ function gameLoop(){
     if (dx !== 0 || dy !== 0){
       moveSprite(game.farmer, dx, dy);
     }
+
+    var plot;
+    for (var i in game.plots){
+      if (i.match(/plot/)){
+        plot = game.plots[i];
+
+        if (plot.contains !== null && !plot.contains.fullGrown()){
+          plot.contains.grow();
+        }
+      }
+    }
   }
 
   view.frame(timeElapsed);
@@ -181,6 +192,10 @@ function activate(){
 
 game.plant = function(plot, plant){
   plot.contains = plant;
+  plant.createSprite(
+    plot.position().left + 5,
+    plot.position().top - 2
+  );
 }
 
 function onKeyPress(ev){

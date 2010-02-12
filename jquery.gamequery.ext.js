@@ -4,7 +4,7 @@
  * Copyright (c) 2010 Rob Britton
  * licensed under the MIT (MIT-LICENSE.txt)
  */
-$.extend($, {gameQueryExt: {}});
+$.gameQueryExt = {};
 
 /* QuadTree
  * A space-partitioning tree useful for efficient collision detection.

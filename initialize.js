@@ -43,13 +43,15 @@ function loadPlants(){
 function loadObjects(){
   animations.plot = new Animation({imageURL: "images/plot.png"});
 
-  game.playground
-    .addSprite("plot1", {animation: animations.plot,
-      width: 30, height: 30, posx: 340, posy: 300});
-  var plot = $("#plot1");
-  plot.contains = null;
-  game.objects.add(plot, 340, 300);
-  game.plots["plot1"] = plot;
+  for (var i = 1; i < 6; i++){
+    game.playground
+      .addSprite("plot" + i, {animation: animations.plot,
+        width: 30, height: 30, posx: 260 + (i * 40), posy: 350});
+    var plot = $("#plot" + i);
+    plot.contains = null;
+    game.objects.add(plot, 260 + i * 40, 350);
+    game.plots["plot" + i] = plot;
+  }
 }
 
 function loadWalkingAnim(){
