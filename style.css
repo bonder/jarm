@@ -24,7 +24,7 @@ a:hover {
 #sidebar{
   position: absolute;
   left: 810px;
-  width: 200px;
+  width: 300px;
 }
 
 #msg{
@@ -48,4 +48,6 @@ a:hover {
 #inventory{
   overflow-x: hidden;
   height: 300px;
+}
+#instructions{
 }
