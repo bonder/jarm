@@ -14,8 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-function PlantingDialog(plot){
+function Dialog(){
   game.state = "paused";
+
+  this.dlg = $("#dialog")
+    .children(".dlg-content")
+      .end()
+    .show();
+}
+Dialog.prototype.close = function(){
+  game.state = "playing";
+  this.dlg.hide();
+};
+Dialog.prototype.setContent = function(html){
+  this.dlg.children(".dlg-content").html(html);
+};
+
+function PlantingDialog(plot){
+  Dialog.call(this);
 
   var text;
   if (plot.contains !== null){
@@ -49,16 +65,18 @@ function PlantingDialog(plot){
   }
 
   this.plot = plot;
-  this.dlg = $("#planting-dlg")
-    .children(".dlg-content")
-      .html(text)
-      .end()
-    .show();
+  this.setContent(text);
 }
+PlantingDialog.prototype = Dialog.prototype;
 
 PlantingDialog.prototype.plant = function(which){
-  var plant = game.farmer.inventory.splice(which, 1);
-  plant = plant[0];
+  var plant = game.farmer.inventory[which];
+
+  if (!plant.name.match(/seed/)){
+    console.log("Error: tried to plant non-seed");
+    return;
+  }
+  game.farmer.inventory.splice(which, 1);
 
   game.plant(this.plot, plant);
   view.drawInventory();
@@ -75,7 +93,44 @@ PlantingDialog.prototype.pick = function(which){
   this.close();
 }
 
-PlantingDialog.prototype.close = function(){
-  game.state = "playing";
-  this.dlg.hide();
+function ShopDialog(shop){
+  Dialog.call(this);
+
+  var text = "";
+  var found = false;
+  var obj;
+  for (var i = 0; i < game.farmer.inventory.length; i++){
+    obj = game.farmer.inventory[i];
+    if (!obj.name.match(/seed/)){
+      found = true;
+      text += '<a href = "#" onclick = "game.dialog.sell(' + i + '); return false">' +
+        obj.name + '</a><br />';
+    }
+  }
+  
+  if (!found){
+    text = "You have nothing to sell. Grow some plants!";
+  }else{
+    text = "What would you like to sell?<br />" +
+      text +
+      '<a href = "#" onclick = "game.dialog.close(); return false">Nothing</a>';
+  }
+
+  this.shop = shop;
+  this.setContent(text);
+}
+ShopDialog.prototype = Dialog.prototype;
+
+ShopDialog.prototype.sell = function(index){
+  var obj = game.farmer.inventory[index];
+
+  // TODO: make it so you can sell seeds
+  if (obj.name.match(/seed/)){
+    console.log("Error: tried to sell seed");
+  }
+  game.farmer.inventory.splice(index, 1);
+
+  this.shop.sell(obj);
+  view.drawInventory();
+  this.close();
 }

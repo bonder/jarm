@@ -187,6 +187,10 @@ function activatePlot(plot){
   game.dialog = new PlantingDialog(plot);
 }
 
+function activateShop(shop){
+  game.dialog = new ShopDialog(shop);
+}
+
 // This one is called when the user presses space
 function activate(){
   var nearby = visibleObjects();
@@ -196,6 +200,12 @@ function activate(){
   for (var i = 0; i < nearby.length; i++){
     obj = nearby[i];
 
+    // TODO: Use a better near() system
+    if (near(obj, game.farmer, game.searchRadius * 2)){
+      if (obj.attr("id") == "shop"){
+        activateShop(game.shop);
+      }
+    }
     if (near(obj, game.farmer, game.searchRadius)){
       if (obj.attr("id").match(/bush/)){
         activateBush(obj);

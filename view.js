@@ -73,6 +73,7 @@ JarmView.prototype.drawInventory = function(){
   }
 
   $("#inventory").html(text);
+  $("#money").html(game.farmer.money);
 }
 
 JarmView.prototype.addMessage = function(message){

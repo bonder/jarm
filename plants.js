@@ -85,6 +85,39 @@ Plant.prototype.removeSprite = function(){
   this.elem.remove();
 }
 
+function Marijuana(){
+  Plant.call(this, "marijuana");
+  this.value = 100;
+}
+Marijuana.prototype = Plant.prototype;
+
+function Rose(){
+  Plant.call(this, "rose");
+  this.value = 20;
+}
+Rose.prototype = Plant.prototype;
+
+function Banana(){
+  Plant.call(this, "banana", "banana seeds", {
+    height: 50,
+    offsetY: -30
+  });
+  this.value = 5;
+}
+Banana.prototype = Plant.prototype;
+
+function Carrot(){
+  Plant.call(this, "carrot");
+  this.value = 5;
+}
+Carrot.prototype = Plant.prototype;
+
+function Cabbage(){
+  Plant.call(this, "cabbage");
+  this.value = 5;
+}
+Cabbage.prototype = Plant.prototype;
+
 var plants = {
   maxNum: 100,
 
@@ -99,55 +132,19 @@ var plants = {
     }
 
     if (which >= 98){
-      return new Plant("marijuana");
+      return new Marijuana();
     }else if (which >= 96){
-      return new Plant("rose");
+      return new Rose();
     /*}else if (which >= 91){
        return plants.apple();*/
     }else if (which >= 86){
-      return new Plant("banana",
-        "banana seeds",
-        {
-          height: 50,
-          offsetY: -30
-        }
-      );
+      return new Banana();
     }else if (which >= 81){
-      return new Plant("carrot");
+      return new Carrot();
     }else if (which >= 76){
-      return new Plant("cabbage");
+      return new Cabbage();
     }else{
       return null;
     }
-  },
-
-  // Plant types
-  apple: function(){
-    return {
-      type: 'apple',
-      name: 'apple seeds'
-    };
-  },
-
-  banana: function(){
-    return {
-      type: 'banana',
-      name: 'banana seeds'
-    };
-  },
-
-  carrot: function(){
-    return {
-      type: 'carrot',
-      name: 'carrot seeds'
-    };
-  },
-
-  cabbage: function(){
-    return {
-      type: 'cabbage',
-      name: 'cabbage seeds'
-    };
-  },
-
+  }
 };

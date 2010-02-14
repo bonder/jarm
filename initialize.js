@@ -22,6 +22,7 @@ $(function(){
   loadPlants();
   loadWalkingAnim();
   loadObjects();
+  loadShop();
   initializeFarmer();
 
   view = new JarmView();
@@ -70,6 +71,17 @@ function loadObjects(){
   }
 }
 
+function loadShop(){
+  game.shop = new Shop();
+  game.shop.animation = new Animation({imageURL: "images/shop.png"});
+
+  game.playground
+    .addSprite("shop", {animation: game.shop.animation,
+      width: 73, height: 48, posx: 30, posy: 30});
+  game.shop.elem = $("#shop");
+  game.objects.add(game.shop.elem, 30, 30);
+}
+
 function loadWalkingAnim(){
   animations.walkingAnim.idle = new Animation({imageURL: "images/farmer.png"});
   animations.walkingAnim.west = new Animation({imageURL: "images/walking-west.png",
@@ -97,5 +109,6 @@ function initializeFarmer(){
 
   // TODO: make more advanced inventory system
   game.farmer.inventory = [];
+  game.farmer.money = 0;
   game.farmer.facing = "south";
 }
