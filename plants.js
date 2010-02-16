@@ -15,30 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 function Plant(type, name, animation){
-  if (name === undefined){
-    name = type + " seeds";
+  if (type !== undefined){
+    if (name === undefined){
+      name = type + " seeds";
+    }
+    if (animation === undefined){
+      animation = {};
+    }
+
+    animation = $.extend({
+      frame: 0,
+      numFrames: 4,
+      imageURL: "images/" + type + ".png",
+      delta: 20,
+      offsetX: 0,
+      offsetY: 0,
+      height: 20,
+      width: 20
+    }, animation);
+
+    this.type = type;
+    this.name = name;
+
+    this.growth = 0;
+    this.growTime = 1000;
+    this.animation = animation;
   }
-  if (animation === undefined){
-    animation = {};
-  }
-
-  animation = $.extend({
-    frame: 0,
-    numFrames: 4,
-    imageURL: "images/" + type + ".png",
-    delta: 20,
-    offsetX: 0,
-    offsetY: 0,
-    height: 20,
-    width: 20
-  }, animation);
-
-  this.type = type;
-  this.name = name;
-
-  this.growth = 0;
-  this.growTime = 1000;
-  this.animation = animation;
 }
 Plant.num = 0;
 Plant.prototype.grow = function(){
@@ -52,15 +54,21 @@ Plant.prototype.grow = function(){
 Plant.prototype.fullGrown = function(){
   return this.growth >= Math.floor(this.growTime / (this.animation.numFrames - 1)) * (this.animation.numFrames - 1);
 }
+Plant.prototype.isSeed = function(){
+  return this.name.match(/(seed|baby)/);
+}
 Plant.prototype.nextFrame = function(){
   if (this.animation.frame < this.animation.numFrames){
     this.elem.css("backgroundPosition", "-" + (this.animation.frame * this.animation.delta) + "px 0px");
     this.animation.frame++;
 
     if (this.fullGrown()){
-      this.name = this.name.replace(" seeds", "");
+      this.growUp();
     }
   }
+}
+Plant.prototype.growUp = function(){
+  this.name = this.name.replace(" seeds", "");
 }
 Plant.prototype.createSprite = function(x, y){
   var num = ++Plant.num;
@@ -86,7 +94,9 @@ Plant.prototype.removeSprite = function(){
 }
 
 function Marijuana(){
-  Plant.call(this, "marijuana");
+  Plant.call(this, "marijuana", "marijuana seeds", {
+    offsetY: -2
+  });
   this.value = 100;
 }
 Marijuana.prototype = Plant.prototype;
@@ -99,12 +109,30 @@ Rose.prototype = Plant.prototype;
 
 function Banana(){
   Plant.call(this, "banana", "banana seeds", {
-    height: 50,
-    offsetY: -30
+    height: 40,
+    offsetY: -24
   });
   this.value = 5;
 }
 Banana.prototype = Plant.prototype;
+
+function Apple(){
+  Plant.call(this, "apple", "apple seeds", {
+    height: 27,
+    offsetY: -10
+  });
+  this.value = 5;
+}
+Apple.prototype = Plant.prototype;
+
+function Cactus(){
+  Plant.call(this, "cactus", "cactus seeds", {
+    height: 32,
+    offsetY: -15
+  });
+  this.value = 5;
+}
+Cactus.prototype = Plant.prototype;
 
 function Carrot(){
   Plant.call(this, "carrot");
@@ -117,6 +145,15 @@ function Cabbage(){
   this.value = 5;
 }
 Cabbage.prototype = Plant.prototype;
+
+function Mushroom(){
+  Plant.call(this, "mushroom", "baby mushrooms");
+  this.value = 5;
+}
+Mushroom.prototype = new Plant();
+Mushroom.prototype.growUp = function(){
+  this.name = this.name.replace(/baby /, "");
+}
 
 var plants = {
   maxNum: 100,
@@ -135,14 +172,18 @@ var plants = {
       return new Marijuana();
     }else if (which >= 96){
       return new Rose();
-    /*}else if (which >= 91){
-       return plants.apple();*/
+    }else if (which >= 91){
+       return new Apple();
     }else if (which >= 86){
       return new Banana();
     }else if (which >= 81){
       return new Carrot();
     }else if (which >= 76){
       return new Cabbage();
+    }else if (which >= 71){
+      return new Cactus();
+    }else if (which >= 66){
+      return new Mushroom();
     }else{
       return null;
     }

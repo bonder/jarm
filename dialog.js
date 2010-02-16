@@ -50,7 +50,7 @@ function PlantingDialog(plot){
     var obj;
     for (var i = 0; i < game.farmer.inventory.length; i++){
       obj = game.farmer.inventory[i];
-      if (obj.name.match(/seed/)){
+      if (obj.isSeed()){
         found = true;
         text += '<a href = "#" onclick = "game.dialog.plant(' + i + '); return false">' +
           obj.name + '</a><br />';
@@ -72,7 +72,7 @@ PlantingDialog.prototype = Dialog.prototype;
 PlantingDialog.prototype.plant = function(which){
   var plant = game.farmer.inventory[which];
 
-  if (!plant.name.match(/seed/)){
+  if (!plant.isSeed()){
     console.log("Error: tried to plant non-seed");
     return;
   }
@@ -101,7 +101,7 @@ function ShopDialog(shop){
   var obj;
   for (var i = 0; i < game.farmer.inventory.length; i++){
     obj = game.farmer.inventory[i];
-    if (!obj.name.match(/seed/)){
+    if (!obj.isSeed()){
       found = true;
       text += '<a href = "#" onclick = "game.dialog.sell(' + i + '); return false">' +
         obj.name + '</a><br />';
@@ -125,7 +125,7 @@ ShopDialog.prototype.sell = function(index){
   var obj = game.farmer.inventory[index];
 
   // TODO: make it so you can sell seeds
-  if (obj.name.match(/seed/)){
+  if (obj.isSeed()){
     console.log("Error: tried to sell seed");
   }
   game.farmer.inventory.splice(index, 1);

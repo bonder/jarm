@@ -123,6 +123,9 @@ function gameLoop(){
   if (game.state == "playing"){
     // Get movement
     var dx = 0, dy = 0;
+
+    // TODO: instead of setting dx/dy based on keyboard status, use some sort of event-based system to
+    // set the characters velocity
     var anim = animations.walkingAnim.idle;
     if ($.gameQueryExt.keyDown("left")){
       dx -= game.moveSpeed;
@@ -177,7 +180,7 @@ function activateBush(bush){
   if (plant === null){
     view.addMessage("Nothing found.");
   }else{
-    view.addMessage("found " + plant.type + " seeds");
+    view.addMessage("Found " + plant.name + ".");
     game.farmer.inventory.push(plant);
     view.drawInventory();
   }
