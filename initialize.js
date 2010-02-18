@@ -20,10 +20,13 @@ $(function(){
   game.background = $("#sceengraph");
 
   loadPlants();
-  loadWalkingAnim();
   loadObjects();
   loadShop();
-  initializeFarmer();
+  game.farmer = new Farmer();
+  game.playground
+    .addSprite("farmer", {animation: game.farmer.getAnimation(),
+      width: game.farmer.width, height: game.farmer.height, posx: 400, posy: 300});
+  game.farmer.elem = $("#farmer");
 
   view = new JarmView();
   registerCallbacks();
@@ -82,33 +85,10 @@ function loadShop(){
   game.objects.add(game.shop.elem, 30, 30);
 }
 
-function loadWalkingAnim(){
-  animations.walkingAnim.idle = new Animation({imageURL: "images/farmer.png"});
-  animations.walkingAnim.west = new Animation({imageURL: "images/walking-west.png",
-    numberOfFrame: 2, type: $.gameQuery.ANIMATION_HORIZONTAL, rate: game.frameRate * 10, delta: 16});
-  animations.walkingAnim.east = new Animation({imageURL: "images/walking-east.png",
-    numberOfFrame: 2, type: $.gameQuery.ANIMATION_HORIZONTAL, rate: game.frameRate * 10, delta: 16});
-  animations.walkingAnim.north = new Animation({imageURL: "images/walking-north.png",
-    numberOfFrame: 2, type: $.gameQuery.ANIMATION_HORIZONTAL, rate: game.frameRate * 10, delta: 16});
-  animations.walkingAnim.south = new Animation({imageURL: "images/walking-south.png",
-    numberOfFrame: 2, type: $.gameQuery.ANIMATION_HORIZONTAL, rate: game.frameRate * 10, delta: 16});
-}
-
 function registerCallbacks(){
   game.playground
-    .registerCallback(gameLoop, view.frameRate)
+    .registerCallback(gameLoop, JarmView.frameRate)
     .registerCallback(function() {view.update();}, view.updateRate);
   $(document).keypress(onKeyPress);
 }
 
-function initializeFarmer(){
-  game.playground
-    .addSprite("farmer", {animation: animations.walkingAnim.idle,
-      width: 16, height: 16, posx: 400, posy: 300});
-  game.farmer = $("#farmer");
-
-  // TODO: make more advanced inventory system
-  game.farmer.inventory = [];
-  game.farmer.money = 0;
-  game.farmer.facing = "south";
-}

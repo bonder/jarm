@@ -47,15 +47,13 @@ function PlantingDialog(plot){
     text = "This plot is empty. What would you like to plant?<br />";
 
     var found = false;
-    var obj;
-    for (var i = 0; i < game.farmer.inventory.length; i++){
-      obj = game.farmer.inventory[i];
-      if (obj.isSeed()){
+    game.farmer.eachItem(function(i, item){
+      if (item.isSeed()){
         found = true;
         text += '<a href = "#" onclick = "game.dialog.plant(' + i + '); return false">' +
-          obj.name + '</a><br />';
+          item.name + '</a><br />';
       }
-    }
+    });
     
     if (!found){
       text = "You have nothing to plant. Find some seeds!";
@@ -70,13 +68,13 @@ function PlantingDialog(plot){
 PlantingDialog.prototype = Dialog.prototype;
 
 PlantingDialog.prototype.plant = function(which){
-  var plant = game.farmer.inventory[which];
+  var plant = game.farmer.getItem(which);
 
   if (!plant.isSeed()){
     console.log("Error: tried to plant non-seed");
     return;
   }
-  game.farmer.inventory.splice(which, 1);
+  game.farmer.removeItem(which);
 
   game.plant(this.plot, plant);
   view.drawInventory();
@@ -86,7 +84,7 @@ PlantingDialog.prototype.plant = function(which){
 PlantingDialog.prototype.pick = function(which){
   var plot = game.plots[which];
 
-  game.farmer.inventory.push(plot.contains);
+  game.farmer.addItem(plot.contains);
   plot.contains.removeSprite();
   plot.contains = null;
   view.drawInventory();
@@ -98,15 +96,13 @@ function ShopDialog(shop){
 
   var text = "";
   var found = false;
-  var obj;
-  for (var i = 0; i < game.farmer.inventory.length; i++){
-    obj = game.farmer.inventory[i];
+  game.farmer.eachItem(function(i, obj){
     if (!obj.isSeed()){
       found = true;
       text += '<a href = "#" onclick = "game.dialog.sell(' + i + '); return false">' +
         obj.name + '</a><br />';
     }
-  }
+  });
   
   if (!found){
     text = "You have nothing to sell. Grow some plants!";
@@ -122,13 +118,13 @@ function ShopDialog(shop){
 ShopDialog.prototype = Dialog.prototype;
 
 ShopDialog.prototype.sell = function(index){
-  var obj = game.farmer.inventory[index];
+  var obj = game.farmer.getItem(index);
 
   // TODO: make it so you can sell seeds
   if (obj.isSeed()){
     console.log("Error: tried to sell seed");
   }
-  game.farmer.inventory.splice(index, 1);
+  game.farmer.removeItem(index);
 
   this.shop.sell(obj);
   view.drawInventory();

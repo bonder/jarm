@@ -49,14 +49,10 @@ var game = {
 
   state: "not started"
 };
+var animations = {
+};
 game.objects = new $.gameQueryExt.QuadTree(game.worldSize, game.worldSize);
 var view;
-
-var animations = {
-  walkingAnim: {},
-
-  lastWalkingAnim: 0
-};
 
 function toWindowCoords(hash){
   var pg = game.playground.offset();
@@ -73,50 +69,6 @@ function visibleObjects(){
     game.playground.width(), game.playground.height());
 }
 
-function moveSprite(sprite, dx, dy){
-  if (dx === 0 && dy === 0){
-    return false;
-  }
-
-  var offset = sprite.position();
-
-  if (offset.left + dx < 0){
-    dx = -offset.left;
-  }else if (offset.left + sprite.width() + dx > game.background.width()){
-    dx = game.background.width() - offset.left - sprite.width();
-  }
-
-  if (offset.top + dy < 0){
-    dy = -offset.top;
-  }else if (offset.top + sprite.height() + dy > game.background.height()){
-    dy = game.background.height() - offset.top - sprite.height();
-  }
-
-  var hit = false;
-  
-  // TODO: pull this out into a function called collide()
-  $.each(visibleObjects(), function(i, obj){
-    if (hit) { return; }
-    if ($.gameQueryExt.rectOverlap(offset.left + dx, offset.top + dy,
-                    sprite.width(), sprite.height(),
-                    obj.position().left, obj.position().top,
-                    obj.width(), obj.height())){
-      hit = true;
-    }
-  });
-
-  if (!hit){
-    sprite.offset(toWindowCoords(
-      {
-        left: offset.left + dx,
-        top: offset.top + dy
-      }
-    ));
-    return true;
-  }
-  return false;
-}
-
 function gameLoop(){
   var timeElapsed = $.gameQueryExt.getTimeElapsed();
 
@@ -124,38 +76,30 @@ function gameLoop(){
     // Get movement
     var dx = 0, dy = 0;
 
-    // TODO: instead of setting dx/dy based on keyboard status, use some sort of event-based system to
-    // set the characters velocity
-    var anim = animations.walkingAnim.idle;
+    var anim = "idle";
     if ($.gameQueryExt.keyDown("left")){
       dx -= game.moveSpeed;
-      anim = animations.walkingAnim.west;
+      anim = "west";
     }
     if ($.gameQueryExt.keyDown("right")){
       dx += game.moveSpeed;
-      anim = animations.walkingAnim.east;
+      anim = "east";
     }
     if ($.gameQueryExt.keyDown("up")){
       dy -= game.moveSpeed;
-      anim = animations.walkingAnim.north;
+      anim = "north";
     }
     if ($.gameQueryExt.keyDown("down")){
       dy += game.moveSpeed;
-      anim = animations.walkingAnim.south;
+      anim = "south";
     }
 
     // need to floor it to prevent jittering
-    dx = Math.floor(dx * timeElapsed / view.frameRate);
-    dy = Math.floor(dy * timeElapsed / view.frameRate);
+    dx = Math.floor(dx * timeElapsed / JarmView.frameRate);
+    dy = Math.floor(dy * timeElapsed / JarmView.frameRate);
 
-    if (anim != animations.lastWalkingAnim){
-      game.farmer.setAnimation(anim);
-      animations.lastWalkingAnim = anim;
-    }
-
-    if (dx !== 0 || dy !== 0){
-      moveSprite(game.farmer, dx, dy);
-    }
+    game.farmer.setAnimation(anim);
+    game.farmer.move(dx, dy);
 
     var plot;
     for (var i in game.plots){
@@ -181,7 +125,7 @@ function activateBush(bush){
     view.addMessage("Nothing found.");
   }else{
     view.addMessage("Found " + plant.name + ".");
-    game.farmer.inventory.push(plant);
+    game.farmer.addItem(plant);
     view.drawInventory();
   }
 }
@@ -204,12 +148,12 @@ function activate(){
     obj = nearby[i];
 
     // TODO: Use a better near() system
-    if (near(obj, game.farmer, game.searchRadius * 2)){
+    if (near(obj, game.farmer.elem, game.searchRadius * 2)){
       if (obj.attr("id") == "shop"){
         activateShop(game.shop);
       }
     }
-    if (near(obj, game.farmer, game.searchRadius)){
+    if (near(obj, game.farmer.elem, game.searchRadius)){
       if (obj.attr("id").match(/bush/)){
         activateBush(obj);
         break;

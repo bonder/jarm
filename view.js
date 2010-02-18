@@ -15,13 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 function JarmView(){
-  $.gameQueryExt.LockedView.call(this, game.farmer, $.playground(), game.background, {
+  $.gameQueryExt.LockedView.call(this, game.farmer.elem, $.playground(), game.background, {
     width: game.worldSize,
     height: game.worldSize,
     imageURL: "images/grass.png"
   });
-
-  this.frameRate = 1000 / 50;
 
   // update rate happens less often since it isn't necessary
   this.updateRate = 1000 / 10;
@@ -34,6 +32,8 @@ function JarmView(){
   this.drawInventory();
 }
 JarmView.prototype = $.gameQueryExt.LockedView.prototype;
+
+JarmView.frameRate = 1000 / 50;
 
 JarmView.prototype.update = function(){
   var now = new Date().getTime();
