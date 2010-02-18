@@ -14,10 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-function Dialog(){
+function Dialog(selector){
+  if (selector === undefined){
+    selector = "#dialog";
+  }
   game.state = "paused";
 
-  this.dlg = $("#dialog")
+  this.dlg = $(selector)
     .children(".dlg-content")
       .end()
     .show();
@@ -35,7 +38,13 @@ function PlantingDialog(plot){
 
   var text;
   if (plot.contains !== null){
-    text = "This plot contains a " + plot.contains.type + " plant.<br />";
+    var plantName;
+    if (plot.contains.type.match(/^[aeiou]/i)){
+      plantName = "n " + plot.contains.type;
+    }else{
+      plantName = " " + plot.contains.type;
+    }
+    text = "This plot contains a" + plantName + " plant.<br />";
 
     if (plot.contains.fullGrown()){
       text += '<a href = "#" onclick = "game.dialog.pick(\'' + plot.attr("id") + '\'); return false">Pick It</a>';
@@ -92,10 +101,17 @@ PlantingDialog.prototype.pick = function(which){
 }
 
 function ShopDialog(shop){
-  Dialog.call(this);
+  Dialog.call(this, "#shop-dlg");
 
   var text = "";
+  // Load up buy page
+  text = "Nothing to buy yet!";
+
+  $("#shop-buy").html(text);
+
+  // Load up sell page
   var found = false;
+  text = "";
   game.farmer.eachItem(function(i, obj){
     if (!obj.isSeed()){
       found = true;
@@ -113,7 +129,7 @@ function ShopDialog(shop){
   }
 
   this.shop = shop;
-  this.setContent(text);
+  $("#shop-sell").html(text);
 }
 ShopDialog.prototype = Dialog.prototype;
 
@@ -129,4 +145,14 @@ ShopDialog.prototype.sell = function(index){
   this.shop.sell(obj);
   view.drawInventory();
   this.close();
+}
+
+ShopDialog.prototype.openPanel = function(which){
+  if (which == "sell"){
+    $("#shop-sell").show();
+    $("#shop-buy").hide();
+  }else{
+    $("#shop-sell").hide();
+    $("#shop-buy").show();
+  }
 }

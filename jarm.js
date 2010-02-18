@@ -15,20 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* Possible Refactoring:
- *  - sprite objects
- *  - view object
- *    - messages manager
- *  - input manager
- *  - resource manager
- *
- * Thoughts on Views:
- *  - locked view
- *    - locks onto a sprite, every update() it positions to be over the sprite
- *    - disable moveBackground
- *  - scroll view
- *    - moves around based on some control
- */
 var Animation = $.gameQuery.Animation;
 var keycodes = $.gameQueryExt.keycodes;
 var keyTracker;

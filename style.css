@@ -51,3 +51,10 @@ a:hover {
 }
 #instructions{
 }
+#shop-sell{
+  display: none;
+}
+.shop-controls{
+  margin: 0 auto;
+  text-align: center;
+}

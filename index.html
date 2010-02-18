@@ -21,6 +21,17 @@
       <div class = "close-button" onclick = "game.dialog.close(); return false">X</div>
       <div class = "dlg-content"></div>
     </div>
+    <div class = "dialog" id = "shop-dlg">
+      <div class = "close-button" onclick = "game.dialog.close(); return false">X</div>
+      <div class = "dlg-content">
+        <div class = "shop-controls">
+          <a href = "#" onclick = "game.dialog.openPanel('buy'); return false">Buy</a> |
+          <a href = "#" onclick = "game.dialog.openPanel('sell'); return false">Sell</a>
+        </div>
+        <div id = "shop-buy"></div>
+        <div id = "shop-sell"></div>
+      </div>
+    </div>
     <script type = "text/javascript" src = "jquery-1.4.min.js"></script>
     <script type = "text/javascript" src = "jquery.gamequery-0.4.0.js"></script>
     <script type = "text/javascript" src = "jquery.gamequery.ext.js"></script>
