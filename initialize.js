@@ -27,6 +27,7 @@ $(function(){
     .addSprite("farmer", {animation: game.farmer.getAnimation(),
       width: game.farmer.width, height: game.farmer.height, posx: 400, posy: 300});
   game.farmer.elem = $("#farmer");
+  game.farmer.setPos(400, 300);
 
   view = new JarmView();
   registerCallbacks();
@@ -90,5 +91,6 @@ function registerCallbacks(){
     .registerCallback(gameLoop, JarmView.frameRate)
     .registerCallback(function() {view.update();}, view.updateRate);
   $(document).keypress(onKeyPress);
+  $(document).click(onClick);
 }
 

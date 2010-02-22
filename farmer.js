@@ -19,6 +19,9 @@ function Farmer(){
   this.width = 16;
   this.height = 16;
 
+  this.vel = new Vector(0, 0);
+  this.pos = new Vector(0, 0);
+
   this.animations = {
     idle: new Animation({imageURL: "images/farmer.png"}),
     west: new Animation({imageURL: "images/walking-west.png",
@@ -37,6 +40,12 @@ function Farmer(){
   this.inventory = [];
   this.money = 0;
   this.facing = "south";
+}
+Farmer.moveSpeed = 5;
+
+Farmer.prototype.setPos = function(x, y){
+  this.pos.x = x;
+  this.pos.y = y;
 }
 
 Farmer.prototype.addItem = function(item){
@@ -72,17 +81,10 @@ Farmer.prototype.move = function(dx, dy){
 
   var offset = this.elem.position();
 
-  if (offset.left + dx < 0){
-    dx = -offset.left;
-  }else if (offset.left + this.elem.width() + dx > game.background.width()){
-    dx = game.background.width() - offset.left - this.elem.width();
-  }
+  var newPos = this.pos.plus(dx, dy);
 
-  if (offset.top + dy < 0){
-    dy = -offset.top;
-  }else if (offset.top + this.elem.height() + dy > game.background.height()){
-    dy = game.background.height() - offset.top - this.elem.height();
-  }
+  // TODO: clipping has an error depending on how far out of the game world they move
+  newPos.clip(game.worldSize, game.worldSize);
 
   var hit = false;
   var farmer = this;
@@ -90,22 +92,26 @@ Farmer.prototype.move = function(dx, dy){
   // TODO: pull this out into a function called collide()
   $.each(visibleObjects(), function(i, obj){
     if (hit) { return; }
-    if ($.gameQueryExt.rectOverlap(offset.left + dx, offset.top + dy,
-                    farmer.elem.width(), farmer.elem.height(),
-                    obj.position().left, obj.position().top,
-                    obj.width(), obj.height())){
+
+    if (Vector.intersectRect(farmer.pos, newPos,
+        obj.position().left, obj.position().top, obj.width(), obj.height())){
+      // TODO: when you hit, clip the movement to be next to the object
       hit = true;
     }
   });
 
   if (!hit){
+    this.pos = newPos;
     this.elem.offset(toWindowCoords(
       {
-        left: offset.left + dx,
-        top: offset.top + dy
+        left: Math.floor(this.pos.x),
+        top: Math.floor(this.pos.y)
       }
     ));
     return true;
+  }else{
+    // TODO: make some sort of path-finding system to go around obstacles
+    this.vel.zero();
   }
   return false;
 };
@@ -114,3 +120,36 @@ Farmer.prototype.move = function(dx, dy){
 Farmer.prototype.eachItem = function(foo){
   $.each(this.inventory, foo);
 };
+
+Farmer.prototype.moveTo = function(target){
+  this.target = target;
+  this.vel = target.minus(this.pos).unit().times(Farmer.moveSpeed);
+}
+
+Farmer.prototype.update = function(dt){
+  // close enough?
+  if (this.target !== undefined){
+    if (this.pos.minus(this.target).normSq() <= this.vel.normSq() * 1.2){
+      this.vel.zero();
+      this.target = undefined;
+    }
+
+    //var scaledV = this.vel.times(dt);
+    this.move(this.vel.x, this.vel.y);
+    $("#dbg-msg").html("" + this.pos.x + ", " + this.pos.y);
+
+    if (this.vel.isZero()){
+      this.setAnimation("idle");
+    }else{
+      if (this.vel.y < -Math.abs(this.vel.x)){
+        this.setAnimation("north");
+      }else if (this.vel.y > Math.abs(this.vel.x)){
+        this.setAnimation("south");
+      }else if (this.vel.x > Math.abs(this.vel.y)){
+        this.setAnimation("east");
+      }else{
+        this.setAnimation("west");
+      }
+    }
+  }
+}

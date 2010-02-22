@@ -58,3 +58,8 @@ a:hover {
   margin: 0 auto;
   text-align: center;
 }
+#dbg-msg{
+  position: absolute;
+  top: 610px;
+  left: 10px;
+}

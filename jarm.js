@@ -29,8 +29,6 @@ var game = {
 
   // config params
   worldSize: 2000,
-  moveSpeed: 5,
-
   searchRadius: 40,
 
   state: "not started"
@@ -49,6 +47,15 @@ function toWindowCoords(hash){
     top: hash.top + bg.top + pg.top
   };
 }
+function toWorldCoords(x, y){
+  var pg = game.playground.offset();
+  var bg = game.background.position();
+
+  return new Vector(
+    x - pg.left - bg.left,
+    y - pg.top - bg.top
+  );
+}
 
 function visibleObjects(){
   return game.objects.get(-game.background.position().left, -game.background.position().top,
@@ -59,33 +66,7 @@ function gameLoop(){
   var timeElapsed = $.gameQueryExt.getTimeElapsed();
 
   if (game.state == "playing"){
-    // Get movement
-    var dx = 0, dy = 0;
-
-    var anim = "idle";
-    if ($.gameQueryExt.keyDown("left")){
-      dx -= game.moveSpeed;
-      anim = "west";
-    }
-    if ($.gameQueryExt.keyDown("right")){
-      dx += game.moveSpeed;
-      anim = "east";
-    }
-    if ($.gameQueryExt.keyDown("up")){
-      dy -= game.moveSpeed;
-      anim = "north";
-    }
-    if ($.gameQueryExt.keyDown("down")){
-      dy += game.moveSpeed;
-      anim = "south";
-    }
-
-    // need to floor it to prevent jittering
-    dx = Math.floor(dx * timeElapsed / JarmView.frameRate);
-    dy = Math.floor(dy * timeElapsed / JarmView.frameRate);
-
-    game.farmer.setAnimation(anim);
-    game.farmer.move(dx, dy);
+    game.farmer.update(timeElapsed / JarmView.frameRate);
 
     var plot;
     for (var i in game.plots){
@@ -167,6 +148,18 @@ function onKeyPress(ev){
   }else if (game.state == "paused"){
     if (ev.keyCode == keycodes.escape && game.dialog !== null){
       game.dialog.close();
+    }
+  }
+}
+
+function onClick(ev){
+  if (game.state == "playing"){
+    var pg = game.playground.position();
+
+    if (ev.clientX > pg.left && ev.clientX < pg.left + game.playground.width() &&
+        ev.clientY > pg.top && ev.clientY < pg.top + game.playground.height()){
+      var pos = toWorldCoords(ev.clientX, ev.clientY);
+      game.farmer.moveTo(pos);
     }
   }
 }
