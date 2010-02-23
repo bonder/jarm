@@ -154,12 +154,18 @@ function onKeyPress(ev){
 
 function onClick(ev){
   if (game.state == "playing"){
-    var pg = game.playground.position();
+    if (ev.originalTarget.tagName.toLowerCase() != "a"){
+      // When you click a dialog item in Firefox it 
+      // sends this click event, so we need to make
+      // sure we didn't just hit a link
 
-    if (ev.clientX > pg.left && ev.clientX < pg.left + game.playground.width() &&
-        ev.clientY > pg.top && ev.clientY < pg.top + game.playground.height()){
-      var pos = toWorldCoords(ev.clientX, ev.clientY);
-      game.farmer.moveTo(pos);
+      var pg = game.playground.position();
+
+      if (ev.clientX > pg.left && ev.clientX < pg.left + game.playground.width() &&
+          ev.clientY > pg.top && ev.clientY < pg.top + game.playground.height()){
+        var pos = toWorldCoords(ev.clientX, ev.clientY);
+        game.farmer.moveTo(pos);
+      }
     }
   }
 }
