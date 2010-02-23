@@ -158,6 +158,7 @@ function onClick(ev){
       // When you click a dialog item in Firefox it 
       // sends this click event, so we need to make
       // sure we didn't just hit a link
+      // TODO: switch the close X to an A tag
 
       var pg = game.playground.position();
 

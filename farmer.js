@@ -84,6 +84,7 @@ Farmer.prototype.move = function(dx, dy){
   var newPos = this.pos.plus(dx, dy);
 
   // TODO: clipping has an error depending on how far out of the game world they move
+  // this isn't a huge deal since the error will be small at the moment
   newPos.clip(game.worldSize, game.worldSize);
 
   var hit = false;
@@ -93,9 +94,8 @@ Farmer.prototype.move = function(dx, dy){
   $.each(visibleObjects(), function(i, obj){
     if (hit) { return; }
 
-    if (Vector.intersectRect(farmer.pos, newPos,
+    if ($.gameQueryExt.rectOverlap(newPos.x, newPos.y, farmer.elem.width(), farmer.elem.height(),
         obj.position().left, obj.position().top, obj.width(), obj.height())){
-      // TODO: when you hit, clip the movement to be next to the object
       hit = true;
     }
   });
@@ -122,6 +122,9 @@ Farmer.prototype.eachItem = function(foo){
 };
 
 Farmer.prototype.moveTo = function(target){
+  // TODO: offset this by half the width and height of the farmer so
+  // that the centre of the farmer moves to the point instead of the
+  // top left of the farmer
   this.target = target;
   this.vel = target.minus(this.pos).unit().times(Farmer.moveSpeed);
 }
